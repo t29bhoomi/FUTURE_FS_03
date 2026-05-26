@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Golden Cup Café</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cream: #fdf6ec; --warm-bg: #faf0df; --amber: #c8762b;
+      --dark-amber: #9e5a18; --espresso: #2e1a0e; --mocha: #6b3f1e;
+      --sage: #7a8c6a; --text: #3a2314; --light-text: #7a5c44;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.5;
+    }
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      padding: 1.2rem 3rem; display: flex; align-items: center; justify-content: space-between;
+      background: rgba(253,246,236,0.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(200,118,43,0.15); transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 4px 20px rgba(46,26,14,0.08); }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--espresso); letter-spacing: -0.02em; }
+    .nav-logo span { color: var(--amber); }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a { text-decoration: none; font-size: 0.88rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mocha); transition: color 0.2s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 2px; background: var(--amber); transition: width 0.25s ease; }
+    .nav-links a:hover { color: var(--amber); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta { background: var(--amber) !important; color: #fff !important; padding: 0.5rem 1.3rem !important; border-radius: 50px; }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--dark-amber) !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: var(--espresso); border-radius: 2px; }
+    #home {
+      min-height: 100vh; display: flex; align-items: center; padding: 8rem 3rem 4rem; position: relative;
+      background: radial-gradient(ellipse 60% 50% at 70% 50%, rgba(200,118,43,0.12) 0%, transparent 70%), var(--cream);
+    }
+    .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .hero-tag { display: inline-block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 1.2rem; padding: 0.35rem 1rem; border: 1.5px solid var(--amber); border-radius: 50px; }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 5vw, 4.4rem); line-height: 1.1; font-weight: 700; color: var(--espresso); margin-bottom: 1.4rem; }
+    .hero-title em { font-style: italic; color: var(--amber); }
+    .hero-sub { font-size: 1.05rem; line-height: 1.75; color: var(--light-text); max-width: 420px; margin-bottom: 2rem; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary { background: var(--amber); color: #fff; padding: 0.85rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.04em; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(200,118,43,0.35); }
+    .btn-primary:hover { background: var(--dark-amber); transform: translateY(-2px); }
+    .btn-outline { border: 2px solid var(--espresso); color: var(--espresso); padding: 0.85rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.04em; transition: background 0.2s, color 0.2s, transform 0.2s; }
+    .btn-outline:hover { background: var(--espresso); color: var(--cream); transform: translateY(-2px); }
+    .hero-visual { position: relative; display: flex; justify-content: center; align-items: center; }
+    .hero-circle { width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #f5d9a8, #e8b86d 60%, #c8762b); position: relative; overflow: hidden; box-shadow: 0 30px 80px rgba(200,118,43,0.3); animation: float 5s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+    .hero-circle::before { content: '☕'; font-size: 9rem; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -52%); filter: drop-shadow(0 8px 20px rgba(46,26,14,0.3)); }
+    .hero-badge { position: absolute; bottom: 20px; right: -10px; background: var(--espresso); color: var(--cream); border-radius: 16px; padding: 1rem 1.3rem; font-family: 'Playfair Display', serif; font-size: 0.85rem; text-align: center; box-shadow: 0 8px 24px rgba(46,26,14,0.25); animation: float 5s ease-in-out infinite; animation-delay: 1s; }
+    .hero-badge strong { font-size: 1.8rem; display: block; }
+    .stats-strip { background: var(--espresso); padding: 1.8rem 3rem; display: flex; justify-content: center; gap: 5rem; flex-wrap: wrap; }
+    .stat { text-align: center; color: var(--cream); }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--amber); }
+    .stat-label { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; margin-top: 0.2rem; }
+    section { padding: 6rem 3rem; position: relative; z-index: 1; }
+    .section-header { text-align: center; margin-bottom: 3.5rem; }
+    .section-tag { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.8rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--espresso); line-height: 1.2; }
+    .section-title em { font-style: italic; color: var(--amber); }
+    .section-sub { color: var(--light-text); margin-top: 0.8rem; font-size: 1rem; line-height: 1.7; max-width: 540px; margin-left: auto; margin-right: auto; }
+    .divider { width: 60px; height: 3px; background: var(--amber); border-radius: 2px; margin: 1rem auto 0; }
+    #about { background: var(--warm-bg); }
+    .about-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-img-wrap { position: relative; }
+    .about-img { width: 100%; aspect-ratio: 4/5; border-radius: 24px; background: linear-gradient(135deg, #e8c07a 0%, #c8762b 50%, #9e5a18 100%); display: flex; align-items: center; justify-content: center; font-size: 7rem; box-shadow: 0 20px 60px rgba(200,118,43,0.25); }
+    .about-accent { position: absolute; top: -16px; right: -16px; width: 100px; height: 100px; border-radius: 50%; background: var(--sage); opacity: 0.25; }
+    .about-accent2 { position: absolute; bottom: -12px; left: -12px; width: 70px; height: 70px; border-radius: 50%; background: var(--amber); opacity: 0.2; }
+    .about-text h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--espresso); margin-bottom: 1.2rem; line-height: 1.25; }
+    .about-text p { color: var(--light-text); line-height: 1.8; margin-bottom: 1rem; font-size: 0.97rem; }
+    .about-features { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.5rem; }
+    .about-feat { display: flex; align-items: center; gap: 0.7rem; font-size: 0.9rem; font-weight: 600; color: var(--mocha); }
+    .about-feat-icon { font-size: 1.2rem; }
+    #menu { background: var(--cream); }
+    .menu-tabs { display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .tab-btn { padding: 0.55rem 1.4rem; border-radius: 50px; border: 2px solid var(--amber); background: transparent; color: var(--amber); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .tab-btn.active, .tab-btn:hover { background: var(--amber); color: #fff; }
+    .menu-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .menu-card { background: #fff; border-radius: 20px; padding: 1.5rem; display: flex; gap: 1.2rem; align-items: flex-start; box-shadow: 0 2px 12px rgba(46,26,14,0.07); transition: transform 0.25s, box-shadow 0.25s; }
+    .menu-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(46,26,14,0.12); }
+    .menu-emoji { font-size: 2.6rem; flex-shrink: 0; }
+    .menu-info h4 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--espresso); margin-bottom: 0.3rem; }
+    .menu-info p { font-size: 0.83rem; color: var(--light-text); line-height: 1.6; }
+    .menu-price { font-weight: 700; color: var(--amber); font-size: 1rem; margin-top: 0.5rem; }
+    #testimonials { background: var(--warm-bg); }
+    .testimonials-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; }
+    .tcard { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 20px rgba(46,26,14,0.07); transition: transform 0.25s; }
+    .tcard:hover { transform: translateY(-4px); }
+    .tcard-quote { font-size: 3rem; color: var(--amber); line-height: 0.5; font-family: serif; margin-bottom: 1rem; }
+    .tcard p { color: var(--light-text); font-size: 0.93rem; line-height: 1.75; font-style: italic; }
+    .tcard-author { display: flex; align-items: center; gap: 0.8rem; margin-top: 1.4rem; }
+    .tcard-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--amber), var(--dark-amber)); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    .tcard-name { font-weight: 700; color: var(--espresso); font-size: 0.9rem; }
+    .tcard-role { font-size: 0.78rem; color: var(--light-text); }
+    .stars { color: var(--amber); font-size: 0.85rem; margin-bottom: 0.6rem; }
+    #gallery { background: var(--cream); }
+    .gallery-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 240px 240px; gap: 1rem; }
+    .g-item { border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; transition: transform 0.3s; cursor: default; position: relative; }
+    .g-item:hover { transform: scale(1.02); }
+    .g-item .g-emoji { font-size: 4rem; line-height: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2)); }
+    .g-item .g-label { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.95); text-shadow: 0 2px 8px rgba(0,0,0,0.3); letter-spacing: 0.04em; }
+    .g-item:nth-child(1) { grid-row: 1 / 3; background: linear-gradient(135deg,#f5d9a8 0%,#c8762b 60%,#7a3d10 100%); }
+    .g-item:nth-child(1) .g-emoji { font-size: 6rem; }
+    .g-item:nth-child(1) .g-label { font-size: 1.2rem; }
+    .g-item:nth-child(2) { background: linear-gradient(135deg,#e8c07a,#9e5a18); }
+    .g-item:nth-child(3) { background: linear-gradient(135deg,#d4a96a,#7a5c44); }
+    .g-item:nth-child(4) { background: linear-gradient(135deg,#c9b99a,#6b3f1e); }
+    .g-item:nth-child(5) { background: linear-gradient(135deg,#b5d6b2,#4a6e47); }
+    #contact { background: var(--espresso); color: var(--cream); }
+    #contact .section-title { color: var(--cream); }
+    #contact .section-sub { color: rgba(253,246,236,0.65); }
+    #contact .section-tag { color: var(--amber); }
+    .contact-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .contact-info h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--amber); }
+    .contact-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+    .contact-icon { font-size: 1.5rem; margin-top: 2px; }
+    .contact-item-text strong { display: block; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.2rem; }
+    .contact-item-text span { font-size: 0.95rem; color: rgba(253,246,236,0.8); line-height: 1.6; }
+    .whatsapp-btn { display: inline-flex; align-items: center; gap: 0.7rem; background: #25D366; color: #fff; padding: 0.85rem 1.8rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.9rem; margin-top: 1.5rem; transition: background 0.2s, transform 0.2s; box-shadow: 0 4px 16px rgba(37,211,102,0.4); }
+    .whatsapp-btn:hover { background: #1da855; transform: translateY(-2px); }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--amber); }
+    .form-group input, .form-group textarea, .form-group select { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(200,118,43,0.3); border-radius: 10px; padding: 0.8rem 1rem; color: var(--cream); font-family: 'Lato', sans-serif; font-size: 0.95rem; transition: border-color 0.2s; resize: none; }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(253,246,236,0.35); }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--amber); }
+    .form-group select option { background: var(--espresso); }
+    .submit-btn { background: var(--amber); color: #fff; border: none; padding: 0.9rem 2rem; border-radius: 50px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s, transform 0.2s; box-shadow: 0 4px 16px rgba(200,118,43,0.4); margin-top: 0.5rem; }
+    .submit-btn:hover { background: var(--dark-amber); transform: translateY(-2px); }
+    .map-container { max-width: 1000px; margin: 3rem auto 0; border-radius: 20px; overflow: hidden; border: 2px solid rgba(200,118,43,0.2); height: 280px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; color: rgba(253,246,236,0.5); font-size: 0.9rem; }
+    .map-container span { font-size: 2.5rem; }
+    footer { background: #1a0d06; color: rgba(253,246,236,0.55); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; }
+    footer a { color: var(--amber); text-decoration: none; }
+    .footer-logo { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 1.2rem; }
+    .footer-logo span { color: var(--amber); }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; background: var(--sage); color: #fff; padding: 0.9rem 1.8rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; transform: translateY(100px); opacity: 0; transition: transform 0.4s, opacity 0.4s; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--cream); padding: 1.5rem 2rem; gap: 1.2rem; border-bottom: 1px solid rgba(200,118,43,0.15); }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+      .hero-inner, .about-grid, .contact-grid { grid-template-columns: 1fr; }
+      .hero-visual { order: -1; }
+      .hero-circle { width: 280px; height: 280px; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .g-item:nth-child(1) { grid-row: auto; }
+      section { padding: 4rem 1.5rem; }
+      .stats-strip { gap: 2rem; }
+    }
+    @media (max-width: 500px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .hero-btns { flex-direction: column; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="nav-logo">The Golden <span>Cup</span></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact" class="nav-cta">Visit Us</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<section id="home">
+  <div class="hero-inner">
+    <div class="hero-content fade-up">
+      <div class="hero-tag">☕ Est. 2018 · Mumbai, India</div>
+      <h1 class="hero-title">Where Every Sip Feels Like <em>Home</em></h1>
+      <p class="hero-sub">Handcrafted brews, warm pastries, and a corner of the world that's entirely yours. Come as you are — stay as long as you like.</p>
+      <div class="hero-btns">
+        <a href="#menu" class="btn-primary">Explore Our Menu</a>
+        <a href="#contact" class="btn-outline">Find Us</a>
+      </div>
+    </div>
+    <div class="hero-visual fade-up">
+      <div class="hero-circle"></div>
+      <div class="hero-badge"><strong>4.9★</strong>Google Rating</div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-strip">
+  <div class="stat"><div class="stat-num">12K+</div><div class="stat-label">Happy Customers</div></div>
+  <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Menu Items</div></div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">Years of Love</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Organic Beans</div></div>
+</div>
+
+<section id="about">
+  <div class="about-grid">
+    <div class="about-img-wrap fade-up">
+      <div class="about-img">🫖</div>
+      <div class="about-accent"></div>
+      <div class="about-accent2"></div>
+    </div>
+    <div class="about-text fade-up">
+      <div class="section-tag">Our Story</div>
+      <h2>A little café with a <em>big heart</em></h2>
+      <p>The Golden Cup was born from a simple dream: a place where neighbours become friends over a perfectly pulled espresso. Founded by Priya and Arjun in 2018, our café sits in the heart of Bandra West, Mumbai.</p>
+      <p>We source single-origin beans directly from farms in Coorg and Chikmagalur. Every cup is brewed to order — no shortcuts, no compromises. Our kitchen bakes fresh every morning using grandma-approved recipes.</p>
+      <div class="about-features">
+        <div class="about-feat"><span class="about-feat-icon">🌿</span> 100% Organic, Locally Sourced Ingredients</div>
+        <div class="about-feat"><span class="about-feat-icon">🎵</span> Live Acoustic Music Every Friday Evening</div>
+        <div class="about-feat"><span class="about-feat-icon">📚</span> Free Book Exchange Corner</div>
+        <div class="about-feat"><span class="about-feat-icon">🐾</span> Pet-Friendly Outdoor Seating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="menu">
+  <div class="section-header fade-up">
+    <div class="section-tag">What We Serve</div>
+    <h2 class="section-title">Our <em>Menu</em></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Made fresh daily, brewed with love. Something for every mood, every hour.</p>
+  </div>
+  <div class="menu-tabs fade-up">
+    <button class="tab-btn active" onclick="filterMenu(event,'all')">All</button>
+    <button class="tab-btn" onclick="filterMenu(event,'coffee')">Coffee</button>
+    <button class="tab-btn" onclick="filterMenu(event,'food')">Food</button>
+    <button class="tab-btn" onclick="filterMenu(event,'cold')">Cold Drinks</button>
+  </div>
+  <div class="menu-grid" id="menuGrid"></div>
+</section>
+
+<section id="testimonials">
+  <div class="section-header fade-up">
+    <div class="section-tag">Customer Love</div>
+    <h2 class="section-title">What People <em>Say</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="testimonials-grid fade-up">
+    <div class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="tcard-quote">"</div>
+      <p>Honestly the best café in Bandra. The oat milk latte here ruined every other café for me. I come every Saturday morning with my dog.</p>
+      <div class="tcard-author"><div class="tcard-avatar">😊</div><div><div class="tcard-name">Riya Mehta</div><div class="tcard-role">Regular since 2019</div></div></div>
+    </div>
+    <div class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="tcard-quote">"</div>
+      <p>The avocado toast and cold brew combo is divine. Perfect vibe for working remotely or catching up with friends — calm, cosy, creative.</p>
+      <div class="tcard-author"><div class="tcard-avatar">🧑‍💻</div><div><div class="tcard-name">Siddharth Nair</div><div class="tcard-role">Remote worker & foodie</div></div></div>
+    </div>
+    <div class="tcard">
+      <div class="stars">★★★★★</div>
+      <div class="tcard-quote">"</div>
+      <p>Came in for the first time and felt like I'd been coming for years. The staff knows everyone's name. That's rare and that's everything.</p>
+      <div class="tcard-author"><div class="tcard-avatar">👩</div><div><div class="tcard-name">Ananya Sharma</div><div class="tcard-role">First-time visitor</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="section-header fade-up">
+    <div class="section-tag">Inside the Cup</div>
+    <h2 class="section-title">A <em>Peek</em> Inside</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="gallery-grid fade-up">
+    <div class="g-item"><span class="g-emoji">☕</span><span class="g-label">Our Signature Brew</span></div>
+    <div class="g-item"><span class="g-emoji">🥐</span><span class="g-label">Fresh Pastries</span></div>
+    <div class="g-item"><span class="g-emoji">🫖</span><span class="g-label">Pour-Over Ritual</span></div>
+    <div class="g-item"><span class="g-emoji">🍰</span><span class="g-label">House-Made Cakes</span></div>
+    <div class="g-item"><span class="g-emoji">🌿</span><span class="g-label">Garden Seating</span></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-header fade-up">
+    <div class="section-tag">Come Say Hello</div>
+    <h2 class="section-title">Find <em>Us</em></h2>
+    <div class="divider"></div>
+    <p class="section-sub">We're always happy to see a new face — or an old favourite.</p>
+  </div>
+  <div class="contact-grid fade-up">
+    <div class="contact-info">
+      <h3>Visit The Golden Cup</h3>
+      <div class="contact-item"><div class="contact-icon">📍</div><div class="contact-item-text"><strong>Address</strong><span>12, Pali Hill Road, Bandra West<br>Mumbai, Maharashtra 400050</span></div></div>
+      <div class="contact-item"><div class="contact-icon">🕐</div><div class="contact-item-text"><strong>Hours</strong><span>Mon–Fri: 7:30 AM – 9:00 PM<br>Sat–Sun: 8:00 AM – 10:00 PM</span></div></div>
+      <div class="contact-item"><div class="contact-icon">📞</div><div class="contact-item-text"><strong>Phone</strong><span>+91 98200 12345</span></div></div>
+      <div class="contact-item"><div class="contact-icon">✉️</div><div class="contact-item-text"><strong>Email</strong><span>hello@goldencup.in</span></div></div>
+      <a href="https://wa.me/919820012345" class="whatsapp-btn" target="_blank"><span>💬</span> Chat on WhatsApp</a>
+    </div>
+    <div>
+      <form class="contact-form" onsubmit="submitForm(event)">
+        <div class="form-group"><label>Your Name</label><input type="text" placeholder="E.g. Priya Shah" required /></div>
+        <div class="form-group"><label>Email or Phone</label><input type="text" placeholder="hello@you.com" required /></div>
+        <div class="form-group"><label>What brings you here?</label><select><option>General Inquiry</option><option>Table Reservation</option><option>Event Booking</option><option>Feedback</option></select></div>
+        <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Say anything... we love hearing from you ☕"></textarea></div>
+        <button type="submit" class="submit-btn">Send Message ✉️</button>
+      </form>
+    </div>
+  </div>
+  <div class="map-container fade-up">
+    <span>🗺️</span>
+    <div>Google Maps — 12, Pali Hill Road, Bandra West, Mumbai</div>
+    <small style="opacity:0.5">(Replace with a real Google Maps embed iframe)</small>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">The Golden <span>Cup</span> ☕</div>
+  <div>© 2026 The Golden Cup Café · Bandra West, Mumbai</div>
+  <div>Made with ❤️ for coffee lovers</div>
+</footer>
+
+<div class="toast" id="toast">✅ Message sent! We'll be in touch soon ☕</div>
+
+<script>
+  const items = [
+    { cat:'coffee', emoji:'☕', name:'Classic Espresso',     desc:'Double shot, rich crema, served in a warmed ceramic cup.', price:'₹120' },
+    { cat:'coffee', emoji:'🥛', name:'Oat Milk Latte',       desc:'Our most-loved drink. Silky, nutty, perfectly balanced.', price:'₹180' },
+    { cat:'coffee', emoji:'🍵', name:'Masala Chai Latte',    desc:'A Mumbai twist on the latte — ginger, cardamom, love.', price:'₹150' },
+    { cat:'coffee', emoji:'🫖', name:'Pour-Over Filter',     desc:'Single-origin Coorg beans, brewed slow for full flavour.', price:'₹200' },
+    { cat:'food',   emoji:'🥐', name:'Butter Croissant',     desc:'Baked fresh each morning. Flaky, golden, irresistible.', price:'₹90' },
+    { cat:'food',   emoji:'🥑', name:'Avocado Toast',        desc:'Sourdough, smashed avocado, chilli flakes & poached egg.', price:'₹260' },
+    { cat:'food',   emoji:'🍰', name:'Hazelnut Cake Slice',  desc:'Dense, moist, dusted with cocoa. Made in-house daily.', price:'₹140' },
+    { cat:'food',   emoji:'🥞', name:'Banana Oat Pancakes',  desc:'Gluten-friendly, topped with honey and seasonal fruit.', price:'₹200' },
+    { cat:'cold',   emoji:'🧊', name:'Cold Brew',            desc:'12-hour steeped, smooth and bold. A summer staple.', price:'₹190' },
+    { cat:'cold',   emoji:'🥤', name:'Mango Lassi Smoothie', desc:'Alphonso mangoes blended with thick yoghurt & cardamom.', price:'₹170' },
+    { cat:'cold',   emoji:'🍋', name:'Lemon Mint Cooler',    desc:'House-made lemonade with fresh mint and a hint of ginger.', price:'₹130' },
+    { cat:'cold',   emoji:'🍫', name:'Iced Chocolate',       desc:'Dark Belgian chocolate, cold milk, cocoa dusting on top.', price:'₹160' },
+  ];
+
+  function renderMenu(filter) {
+    const grid = document.getElementById('menuGrid');
+    const list = filter === 'all' ? items : items.filter(i => i.cat === filter);
+    grid.innerHTML = list.map(i => `
+      <div class="menu-card fade-up visible">
+        <div class="menu-emoji">${i.emoji}</div>
+        <div class="menu-info">
+          <h4>${i.name}</h4>
+          <p>${i.desc}</p>
+          <div class="menu-price">${i.price}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function filterMenu(e, cat) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    renderMenu(cat);
+  }
+
+  renderMenu('all');
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+  });
+
+  function submitForm(e) {
+    e.preventDefault();
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+    e.target.reset();
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) en.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
